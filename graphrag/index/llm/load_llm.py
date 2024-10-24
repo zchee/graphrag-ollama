@@ -14,9 +14,13 @@ from fnllm.openai import (
     AzureOpenAIConfig,
     OpenAIConfig,
     PublicOpenAIConfig,
+    OllamaConfiguration,
     create_openai_chat_llm,
     create_openai_client,
     create_openai_embeddings_llm,
+    create_ollama_client,
+    create_ollama_chat_llm,
+    create_ollama_embedding_llm,
 )
 from fnllm.openai.types.chat.parameters import OpenAIChatParameters
 from pydantic import TypeAdapter
@@ -129,7 +133,6 @@ def load_llm(
 
     msg = f"Unknown LLM type {llm_type}"
     raise ValueError(msg)
-
 
 def load_llm_embeddings(
     name: str,
@@ -252,6 +255,61 @@ def _create_openai_config(config: LLMParameters, azure: bool) -> OpenAIConfig:
     )
 
 
+def _create_ollama_config(config: LanguageModelConfig, azure: bool) -> OllamaConfiguration:
+    encoding_model = config.encoding_model
+    json_strategy = (
+        JsonStrategy.VALID if config.model_supports_json else JsonStrategy.LOOSE
+    )
+    chat_parameters = OpenAIChatParameters(
+        frequency_penalty=config.frequency_penalty,
+        presence_penalty=config.presence_penalty,
+        top_p=config.top_p,
+        max_tokens=config.max_tokens,
+        n=config.n,
+        temperature=config.temperature,
+    )
+
+    if azure:
+        if config.api_base is None:
+            msg = "Azure OpenAI Chat LLM requires an API base"
+            raise ValueError(msg)
+
+        audience = config.audience or defs.AZURE_AUDIENCE
+        return AzureOpenAIConfig(
+            api_key=config.api_key,
+            endpoint=config.api_base,
+            json_strategy=json_strategy,
+            api_version=config.api_version,
+            organization=config.organization,
+            max_retries=config.max_retries,
+            max_retry_wait=config.max_retry_wait,
+            requests_per_minute=config.requests_per_minute,
+            tokens_per_minute=config.tokens_per_minute,
+            cognitive_services_endpoint=audience,
+            timeout=config.request_timeout,
+            max_concurrency=config.concurrent_requests,
+            model=config.model,
+            encoding=encoding_model,
+            deployment=config.deployment_name,
+            chat_parameters=chat_parameters,
+        )
+    return PublicOpenAIConfig(
+        api_key=config.api_key,
+        base_url=config.api_base,
+        json_strategy=json_strategy,
+        organization=config.organization,
+        max_retries=config.max_retries,
+        max_retry_wait=config.max_retry_wait,
+        requests_per_minute=config.requests_per_minute,
+        tokens_per_minute=config.tokens_per_minute,
+        timeout=config.request_timeout,
+        max_concurrency=config.concurrent_requests,
+        model=config.model,
+        encoding=encoding_model,
+        chat_parameters=chat_parameters,
+    )
+
+
 def _load_azure_openai_chat_llm(
     on_error: ErrorHandlerFn, cache: LLMCache, config: LLMParameters
 ):
@@ -273,6 +331,32 @@ def _load_static_response(
     return MockChatLLM(config.responses or [])
 
 
+def _load_ollama_chat_llm(
+    on_error: ErrorHandlerFn,
+    cache: LLMCache,
+    config: LanguageModelConfig,
+    azure=False,
+):
+    return _create_ollama_chat_llm(
+        _create_ollama_config(config, azure),
+        on_error,
+        cache,
+    )
+
+
+def _load_ollama_embeddings_llm(
+    on_error: ErrorHandlerFn,
+    cache: LLMCache,
+    config: LanguageModelConfig,
+    azure=False,
+):
+    return _create_ollama_embeddings_llm(
+        _create_ollama_config(config, azure),
+        on_error,
+        cache,
+    )
+
+
 loaders = {
     LLMType.OpenAIChat: {
         "load": _load_openai_chat_llm,
@@ -280,6 +364,10 @@ loaders = {
     },
     LLMType.AzureOpenAIChat: {
         "load": _load_azure_openai_chat_llm,
+        "chat": True,
+    },
+    LLMType.OllamaChat: {
+        "load": _load_ollama_chat_llm,
         "chat": True,
     },
     LLMType.OpenAIEmbedding: {
@@ -290,9 +378,17 @@ loaders = {
         "load": _load_azure_openai_embeddings_llm,
         "chat": False,
     },
+    LLMType.OllamaEmbedding: {
+        "load": _load_ollama_embeddings_llm,
+        "chat": False,
+    },
     LLMType.StaticResponse: {
         "load": _load_static_response,
         "chat": False,
+    },
+    LLMType.AzureOpenAIChat: {
+        "load": _load_azure_openai_chat_llm,
+        "chat": True,
     },
 }
 
@@ -320,6 +416,36 @@ def _create_openai_embeddings_llm(
     """Create an openAI embeddings llm."""
     client = create_openai_client(configuration)
     return create_openai_embeddings_llm(
+        configuration,
+        client=client,
+        cache=cache,
+        events=GraphRagLLMEvents(on_error),
+    )
+
+
+def _create_ollama_chat_llm(
+    configuration: OllamaConfiguration,
+    on_error: ErrorHandlerFn,
+    cache: LLMCache,
+) -> ChatLLM:
+    """Create an Ollama chat llm."""
+    client = create_ollama_client(configuration)
+    return create_ollama_chat_llm(
+        configuration,
+        client=client,
+        cache=cache,
+        events=GraphRagLLMEvents(on_error),
+    )
+
+
+def _create_ollama_embeddings_llm(
+    configuration: OllamaConfiguration,
+    on_error: ErrorHandlerFn,
+    cache: LLMCache,
+) -> EmbeddingsLLM:
+    """Create an Ollama embeddings llm."""
+    client = create_ollama_client(configuration)
+    return create_ollama_embedding_llm(
         configuration,
         client=client,
         cache=cache,
