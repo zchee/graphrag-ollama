@@ -127,6 +127,7 @@ def load_llm(
     msg = f"Unknown LLM type {llm_type}"
     raise ValueError(msg)
 
+
 def load_llm_embeddings(
     name: str,
     llm_config: LanguageModelConfig,
