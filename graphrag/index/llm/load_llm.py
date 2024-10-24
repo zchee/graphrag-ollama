@@ -20,7 +20,7 @@ from fnllm.openai import (
     create_openai_embeddings_llm,
     create_ollama_client,
     create_ollama_chat_llm,
-    create_ollama_embedding_llm,
+    create_ollama_embeddings_llm,
 )
 from fnllm.openai.types.chat.parameters import OpenAIChatParameters
 
@@ -380,10 +380,6 @@ loaders = {
         "load": _load_static_response,
         "chat": False,
     },
-    LLMType.AzureOpenAIChat: {
-        "load": _load_azure_openai_chat_llm,
-        "chat": True,
-    },
 }
 
 
@@ -439,7 +435,7 @@ def _create_ollama_embeddings_llm(
 ) -> EmbeddingsLLM:
     """Create an Ollama embeddings llm."""
     client = create_ollama_client(configuration)
-    return create_ollama_embedding_llm(
+    return create_ollama_embeddings_llm(
         configuration,
         client=client,
         cache=cache,
