@@ -22,6 +22,7 @@ from graphrag.llm.utils import (
     get_sleep_time_from_error,
     get_token_counter,
 )
+<<<<<<<< HEAD:graphrag/llm/ollama/factories.py
 from graphrag.llm.openai.openai_history_tracking_llm import OpenAIHistoryTrackingLLM
 from graphrag.llm.openai.openai_token_replacing_llm import OpenAITokenReplacingLLM
 
@@ -31,6 +32,34 @@ from .ollama_completion_llm import OllamaCompletionLLM
 from .ollama_configuration import OllamaConfiguration
 from .ollama_embeddings_llm import OllamaEmbeddingsLLM
 from .types import OllamaClientType
+|||||||| parent of b2736a9 (ollama support.):graphrag/llm/openai/factories.py
+
+from .json_parsing_llm import JsonParsingLLM
+from .openai_chat_llm import OpenAIChatLLM
+from .openai_completion_llm import OpenAICompletionLLM
+from .openai_configuration import OpenAIConfiguration
+from .openai_embeddings_llm import OpenAIEmbeddingsLLM
+from .openai_history_tracking_llm import OpenAIHistoryTrackingLLM
+from .openai_token_replacing_llm import OpenAITokenReplacingLLM
+from .types import OpenAIClientTypes
+from .utils import (
+    RATE_LIMIT_ERRORS,
+    RETRYABLE_ERRORS,
+    get_completion_cache_args,
+    get_sleep_time_from_error,
+    get_token_counter,
+)
+========
+
+from .json_parsing_llm import JsonParsingLLM
+from .openai_chat_llm import OpenAIChatLLM
+from .openai_completion_llm import OpenAICompletionLLM
+from .openai_configuration import OpenAIConfiguration
+from .openai_embeddings_llm import OpenAIEmbeddingsLLM
+from .openai_history_tracking_llm import OpenAIHistoryTrackingLLM
+from .openai_token_replacing_llm import OpenAITokenReplacingLLM
+from .types import OpenAIClientTypes
+>>>>>>>> b2736a9 (ollama support.):graphrag/llm/openai/factories.py
 
 
 def create_ollama_chat_llm(

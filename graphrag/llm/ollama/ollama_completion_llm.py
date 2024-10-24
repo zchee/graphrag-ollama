@@ -14,10 +14,23 @@ from graphrag.llm.types import (
     LLMInput,
 )
 from graphrag.llm.utils import get_completion_llm_args
+<<<<<<<< HEAD:graphrag/llm/ollama/ollama_completion_llm.py
 
 from .ollama_configuration import OllamaConfiguration
 from .types import OllamaClientType
+|||||||| parent of b2736a9 (ollama support.):graphrag/llm/openai/openai_completion_llm.py
+========
+>>>>>>>> b2736a9 (ollama support.):graphrag/llm/openai/openai_completion_llm.py
 
+<<<<<<<< HEAD:graphrag/llm/ollama/ollama_completion_llm.py
+|||||||| parent of b2736a9 (ollama support.):graphrag/llm/openai/openai_completion_llm.py
+from .openai_configuration import OpenAIConfiguration
+from .types import OpenAIClientTypes
+from .utils import get_completion_llm_args
+========
+from .openai_configuration import OpenAIConfiguration
+from .types import OpenAIClientTypes
+>>>>>>>> b2736a9 (ollama support.):graphrag/llm/openai/openai_completion_llm.py
 
 log = logging.getLogger(__name__)
 
