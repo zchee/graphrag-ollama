@@ -15,7 +15,7 @@ import pandas as pd
 import tiktoken
 
 from graphrag.callbacks.global_search_callbacks import GlobalSearchLLMCallback
-from graphrag.llm.openai.utils import try_parse_json_object
+from graphrag.llm.utils import try_parse_json_object
 from graphrag.prompts.query.global_search_knowledge_system_prompt import (
     GENERAL_KNOWLEDGE_INSTRUCTION,
 )
