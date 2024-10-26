@@ -26,46 +26,34 @@ The GraphRAG project is a data pipeline and transformation suite that is designe
 
 To learn more about GraphRAG and how it can be used to enhance your LLM's ability to reason about your private data, please visit the <a href="https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/" target="_blank">Microsoft Research Blog Post.</a>
 
-## Quickstart
+分支feature/ollama-support上实现了支持Ollama免费大模型的调用，本地也可以玩了。
 
-To get started with the GraphRAG system we recommend trying the [Solution Accelerator](https://github.com/Azure-Samples/graphrag-accelerator) package. This provides a user-friendly end-to-end experience with Azure resources.
+跟着[教程](https://microsoft.github.io/graphrag/get_started/)走一遍
 
-## Repository Guidance
+settings.yaml参考配置如下：
 
-This repository presents a methodology for using knowledge graph memory structures to enhance LLM outputs. Please note that the provided code serves as a demonstration and is not an officially supported Microsoft offering.
+llm:
 
-⚠️ *Warning: GraphRAG indexing can be an expensive operation, please read all of the documentation to understand the process and costs involved, and start small.*
+type: ollama_chat # or azure_openai_chat
 
-## Diving Deeper
+model: llama3.1:8b
 
-- To learn about our contribution guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md)
-- To start developing _GraphRAG_, see [DEVELOPING.md](./DEVELOPING.md)
-- Join the conversation and provide feedback in the [GitHub Discussions tab!](https://github.com/microsoft/graphrag/discussions)
+model_supports_json: false # recommended if this is available for your model.
 
-## Prompt Tuning
+max_tokens: 12800
 
-Using _GraphRAG_ with your data out of the box may not yield the best possible results.
-We strongly recommend to fine-tune your prompts following the [Prompt Tuning Guide](https://microsoft.github.io/graphrag/prompt_tuning/overview/) in our documentation.
+api_base: http://localhost:11434
 
-## Responsible AI FAQ
+concurrent_requests: 2 # the number of parallel inflight requests that may be made
 
-See [RAI_TRANSPARENCY.md](./RAI_TRANSPARENCY.md)
+embeddings:
 
-- [What is GraphRAG?](./RAI_TRANSPARENCY.md#what-is-graphrag)
-- [What can GraphRAG do?](./RAI_TRANSPARENCY.md#what-can-graphrag-do)
-- [What are GraphRAG’s intended use(s)?](./RAI_TRANSPARENCY.md#what-are-graphrags-intended-uses)
-- [How was GraphRAG evaluated? What metrics are used to measure performance?](./RAI_TRANSPARENCY.md#how-was-graphrag-evaluated-what-metrics-are-used-to-measure-performance)
-- [What are the limitations of GraphRAG? How can users minimize the impact of GraphRAG’s limitations when using the system?](./RAI_TRANSPARENCY.md#what-are-the-limitations-of-graphrag-how-can-users-minimize-the-impact-of-graphrags-limitations-when-using-the-system)
-- [What operational factors and settings allow for effective and responsible use of GraphRAG?](./RAI_TRANSPARENCY.md#what-operational-factors-and-settings-allow-for-effective-and-responsible-use-of-graphrag)
+llm:
 
-## Trademarks
+type: ollama_embedding # or azure_openai_embedding
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
-trademarks or logos is subject to and must follow
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+model: nomic-embed-text:latest
 
-## Privacy
+api_base: http://localhost:11434
 
-[Microsoft Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+concurrent_requests: 2 # the number of parallel inflight requests that may be made
