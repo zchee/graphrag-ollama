@@ -33,27 +33,29 @@ To learn more about GraphRAG and how it can be used to enhance your LLM's abilit
 settings.yaml参考配置如下：
 
 llm:
-
-type: ollama_chat # or azure_openai_chat
-
-model: llama3.1:8b
-
-model_supports_json: false # recommended if this is available for your model.
-
-max_tokens: 12800
-
-api_base: http://localhost:11434
-
-concurrent_requests: 2 # the number of parallel inflight requests that may be made
+  api_key: NONE
+  
+  type: ollama_chat # or azure_openai_chat
+  
+  model: llama3.1:8b
+  
+  model_supports_json: false # recommended if this is available for your model.
+  
+  max_tokens: 12800
+  
+  api_base: http://localhost:11434
+  
+  concurrent_requests: 2 # the number of parallel inflight requests that may be made
 
 embeddings:
 
-llm:
-
-type: ollama_embedding # or azure_openai_embedding
-
-model: nomic-embed-text:latest
-
-api_base: http://localhost:11434
-
-concurrent_requests: 2 # the number of parallel inflight requests that may be made
+  llm:
+    api_key: NONE
+  
+    type: ollama_embedding # or azure_openai_embedding
+    
+    model: nomic-embed-text:latest
+    
+    api_base: http://localhost:11434
+    
+    concurrent_requests: 2 # the number of parallel inflight requests that may be made
