@@ -14,13 +14,14 @@ from fnllm.openai import (
     AzureOpenAIConfig,
     OpenAIConfig,
     PublicOpenAIConfig,
-    OllamaConfiguration,
     create_openai_chat_llm,
     create_openai_client,
     create_openai_embeddings_llm,
+)
+from ...llm.ollama import (
+    OllamaConfig,
     create_ollama_client,
     create_ollama_chat_llm,
-    create_ollama_embeddings_llm,
 )
 from fnllm.openai.types.chat.parameters import OpenAIChatParameters
 
@@ -248,7 +249,7 @@ def _create_openai_config(config: LanguageModelConfig, azure: bool) -> OpenAICon
     )
 
 
-def _create_ollama_config(config: LanguageModelConfig, azure: bool) -> OllamaConfiguration:
+def _create_ollama_config(config: LanguageModelConfig) -> OllamaConfig:
     encoding_model = config.encoding_model
     json_strategy = (
         JsonStrategy.VALID if config.model_supports_json else JsonStrategy.LOOSE
@@ -262,30 +263,6 @@ def _create_ollama_config(config: LanguageModelConfig, azure: bool) -> OllamaCon
         temperature=config.temperature,
     )
 
-    if azure:
-        if config.api_base is None:
-            msg = "Azure OpenAI Chat LLM requires an API base"
-            raise ValueError(msg)
-
-        audience = config.audience or defs.AZURE_AUDIENCE
-        return AzureOpenAIConfig(
-            api_key=config.api_key,
-            endpoint=config.api_base,
-            json_strategy=json_strategy,
-            api_version=config.api_version,
-            organization=config.organization,
-            max_retries=config.max_retries,
-            max_retry_wait=config.max_retry_wait,
-            requests_per_minute=config.requests_per_minute,
-            tokens_per_minute=config.tokens_per_minute,
-            cognitive_services_endpoint=audience,
-            timeout=config.request_timeout,
-            max_concurrency=config.concurrent_requests,
-            model=config.model,
-            encoding=encoding_model,
-            deployment=config.deployment_name,
-            chat_parameters=chat_parameters,
-        )
     return PublicOpenAIConfig(
         api_key=config.api_key,
         base_url=config.api_base,
@@ -328,10 +305,9 @@ def _load_ollama_chat_llm(
     on_error: ErrorHandlerFn,
     cache: LLMCache,
     config: LanguageModelConfig,
-    azure=False,
 ):
     return _create_ollama_chat_llm(
-        _create_ollama_config(config, azure),
+        _create_ollama_config(config),
         on_error,
         cache,
     )
@@ -341,10 +317,9 @@ def _load_ollama_embeddings_llm(
     on_error: ErrorHandlerFn,
     cache: LLMCache,
     config: LanguageModelConfig,
-    azure=False,
 ):
     return _create_ollama_embeddings_llm(
-        _create_ollama_config(config, azure),
+        _create_ollama_config(config),
         on_error,
         cache,
     )
@@ -413,7 +388,7 @@ def _create_openai_embeddings_llm(
 
 
 def _create_ollama_chat_llm(
-    configuration: OllamaConfiguration,
+    configuration: OllamaConfig,
     on_error: ErrorHandlerFn,
     cache: LLMCache,
 ) -> ChatLLM:
@@ -428,7 +403,7 @@ def _create_ollama_chat_llm(
 
 
 def _create_ollama_embeddings_llm(
-    configuration: OllamaConfiguration,
+    configuration: OllamaConfig,
     on_error: ErrorHandlerFn,
     cache: LLMCache,
 ) -> EmbeddingsLLM:
