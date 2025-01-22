@@ -7,16 +7,16 @@ import logging
 
 from typing_extensions import Unpack
 
-from graphrag.llm.base import BaseLLM
-from graphrag.llm.types import (
-    CompletionInput,
-    CompletionOutput,
+from fnllm.base import BaseLLM
+from fnllm.types import (
     LLMInput,
     LLMOutput,
+    TChatInput,
+    TChatOutput,
 )
 from graphrag.llm.utils import try_parse_json_object
 
-from .ollama_configuration import OllamaConfiguration
+from .ollama_configuration import OllamaConfig
 from .types import OllamaClientType
 
 log = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ _MAX_GENERATION_RETRIES = 3
 FAILED_TO_CREATE_JSON_ERROR = "Failed to generate valid JSON output"
 
 
-class OllamaChatLLM(BaseLLM[CompletionInput, CompletionOutput]):
+class OllamaChatLLM(BaseLLM[TChatInput, TChatOutput]):
     """A Chat-based LLM."""
 
     _client: OllamaClientType

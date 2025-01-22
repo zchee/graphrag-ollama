@@ -3,7 +3,7 @@
 
 """The Datashaper OpenAI Utilities package."""
 
-from .base import BaseLLM, CachingLLM, RateLimitingLLM
+from fnllm.base import BaseLLM, CachingLLM, RateLimitingLLM
 from .errors import RetriesExhaustedError
 from .limiting import (
     CompositeLLMLimiter,
