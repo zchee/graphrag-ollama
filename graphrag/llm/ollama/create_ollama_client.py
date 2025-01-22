@@ -8,7 +8,7 @@ from functools import cache
 
 from ollama import AsyncClient, Client
 
-from .ollama_configuration import OllamaConfiguration
+from .ollama_configuration import OllamaConfig
 from .types import OllamaClientType
 
 log = logging.getLogger(__name__)
@@ -18,19 +18,19 @@ API_BASE_REQUIRED_FOR_AZURE = "api_base is required for Azure OpenAI client"
 
 @cache
 def create_ollama_client(
-    configuration: OllamaConfiguration,
+    configuration: OllamaConfig,
     sync: bool = False,
 ) -> OllamaClientType:
     """Create a new Ollama client instance."""
 
-    log.info("Creating OpenAI client base_url=%s", configuration.api_base)
+    log.info("Creating OpenAI client base_url=%s", configuration.base_url)
     if sync:
         return Client(
-            host=configuration.api_base,
-            timeout=configuration.request_timeout or 180.0,
+            host=configuration.base_url,
+            timeout=configuration.timeout or 180.0,
         )
     return AsyncClient(
-        host=configuration.api_base,
+        host=configuration.base_url,
         # Timeout/Retry Configuration - Use Tenacity for Retries, so disable them here
-        timeout=configuration.request_timeout or 180.0,
+        timeout=configuration.timeout or 180.0,
     )
