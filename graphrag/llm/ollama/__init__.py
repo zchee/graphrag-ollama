@@ -11,7 +11,7 @@ from .factories import (
 )
 from .ollama_chat_llm import OllamaChatLLM
 from .ollama_completion_llm import OllamaCompletionLLM
-from .ollama_configuration import OllamaConfiguration
+from .ollama_configuration import OllamaConfig
 from .ollama_embeddings_llm import OllamaEmbeddingsLLM
 from .types import OllamaClientType
 
@@ -20,7 +20,7 @@ __all__ = [
     "OllamaChatLLM",
     "OllamaClientType",
     "OllamaCompletionLLM",
-    "OllamaConfiguration",
+    "OllamaConfig",
     "OllamaEmbeddingsLLM",
     "create_ollama_chat_llm",
     "create_ollama_client",
