@@ -5,40 +5,25 @@
 from typing import Any
 
 import tiktoken
-
 from fnllm.events.base import LLMEvents
 from fnllm.limiting.base import Limiter
 from fnllm.limiting.composite import CompositeLimiter
-from fnllm.limiting.concurrency import ConcurrencyLimiter
-from fnllm.limiting.rpm import RPMLimiter
-from fnllm.limiting.tpm import TPMLimiter
 from fnllm.openai.config import OpenAIConfig
 from fnllm.openai.llm.services.rate_limiter import OpenAIRateLimiter
 from fnllm.openai.llm.services.retryer import OpenAIRetryer
 from fnllm.services.rate_limiter import RateLimiter
 from fnllm.services.retryer import Retryer
 
+from graphrag.fnllm.ollama.config import OllamaConfig
+
 
 def _get_encoding(encoding_name: str) -> tiktoken.Encoding:
     return tiktoken.get_encoding(encoding_name)
 
 
-def create_limiter(config: OpenAIConfig) -> Limiter:
+def create_limiter(config: OllamaConfig) -> Limiter:
     """Create an LLM limiter based on the incoming configuration."""
     limiters = []
-
-    if config.max_concurrency:
-        limiters.append(ConcurrencyLimiter.from_max_concurrency(config.max_concurrency))
-
-    if config.requests_per_minute:
-        limiters.append(
-            RPMLimiter.from_rpm(
-                config.requests_per_minute, burst_mode=config.requests_burst_mode
-            )
-        )
-
-    if config.tokens_per_minute:
-        limiters.append(TPMLimiter.from_tpm(config.tokens_per_minute))
 
     return CompositeLimiter(limiters)
 

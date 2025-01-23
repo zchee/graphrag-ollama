@@ -4,9 +4,6 @@
 
 from typing import Literal, Protocol, TypeAlias, overload, runtime_checkable
 
-from openai import AsyncAzureOpenAI, AsyncOpenAI
-from typing_extensions import Unpack
-
 from fnllm.openai.types.chat.io import (
     OpenAIChatCompletionInput,
     OpenAIChatHistoryEntry,
@@ -22,8 +19,10 @@ from fnllm.openai.types.embeddings.parameters import OpenAIEmbeddingsParameters
 from fnllm.types.generics import TJsonModel
 from fnllm.types.io import LLMInput, LLMOutput
 from fnllm.types.protocol import LLM
+from ollama import AsyncClient
+from typing_extensions import Unpack
 
-OpenAIClient = AsyncOpenAI | AsyncAzureOpenAI
+OllamaClient = AsyncClient
 """Allowed OpenAI client types."""
 
 OpenAITextChatLLM: TypeAlias = LLM[

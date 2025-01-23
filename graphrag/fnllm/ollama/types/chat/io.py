@@ -5,36 +5,30 @@
 from collections.abc import AsyncIterable, Awaitable, Callable
 from typing import ClassVar, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from fnllm.openai.types.aliases import (
-    OpenAIChatCompletionMessageModel,
     OpenAIChatCompletionMessageParam,
 )
 from fnllm.types.generalized import ChatLLMOutput
 from fnllm.types.metrics import LLMUsageMetrics
+from pydantic import BaseModel, ConfigDict, Field
 
 OpenAIChatMessageInput: TypeAlias = OpenAIChatCompletionMessageParam
 """OpenAI chat message input."""
 
-OpenAIChatHistoryEntry: TypeAlias = OpenAIChatCompletionMessageParam
+# OpenAIChatHistoryEntry: TypeAlias = OpenAIChatCompletionMessageParam
 """OpenAI chat history entry."""
 
-OpenAIChatCompletionInput: TypeAlias = str | OpenAIChatMessageInput | None
+# OpenAIChatCompletionInput: TypeAlias = str | OpenAIChatMessageInput | None
+OllamaChatCompletionInput: TypeAlias = str | OpenAIChatMessageInput | None
 """Main input type for OpenAI completions."""
 
 
-class OpenAIChatOutput(ChatLLMOutput):
-    """OpenAI chat completion output."""
+OllamaChatOutput: TypeAlias = ChatLLMOutput
 
-    raw_input: OpenAIChatMessageInput | None
-    """Raw input that resulted in this output."""
+OllamaChatInput: TypeAlias = str
 
-    raw_output: OpenAIChatCompletionMessageModel
-    """Raw output message from OpenAI."""
 
-    usage: LLMUsageMetrics | None
-    """Usage statistics for the completion request."""
+OllamaChatHistoryEntry: TypeAlias = OpenAIChatCompletionMessageParam
 
 
 class OpenAIStreamingChatOutput(BaseModel, arbitrary_types_allowed=True):

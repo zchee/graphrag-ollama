@@ -3,8 +3,6 @@
 
 from typing import Any, Literal, overload
 
-from typing_extensions import Unpack
-
 from fnllm.openai.types.chat.io import (
     OpenAIChatCompletionInput,
     OpenAIChatHistoryEntry,
@@ -19,6 +17,7 @@ from fnllm.openai.types.client import (
 )
 from fnllm.types.generics import TJsonModel
 from fnllm.types.io import LLMInput, LLMOutput
+from typing_extensions import Unpack
 
 
 class OpenAIChatLLMImpl(OpenAIChatLLM):

@@ -8,11 +8,7 @@ from fnllm.limiting.base import Limiter
 from fnllm.openai.config import OpenAIConfig
 from fnllm.openai.llm.chat import OpenAIChatLLMImpl
 from fnllm.openai.llm.chat_streaming import OpenAIStreamingChatLLMImpl
-from fnllm.openai.llm.chat_text import OpenAITextChatLLMImpl
 from fnllm.openai.llm.features.tools_parsing import OpenAIParseToolsLLM
-from fnllm.openai.llm.services.history_extractor import OpenAIHistoryExtractor
-from fnllm.openai.llm.services.json import create_json_handler
-from fnllm.openai.llm.services.usage_extractor import OpenAIUsageExtractor
 from fnllm.openai.types.client import (
     OpenAIChatLLM,
     OpenAIClient,
@@ -22,66 +18,53 @@ from fnllm.openai.types.client import (
 from fnllm.services.cache_interactor import CacheInteractor
 from fnllm.services.variable_injector import VariableInjector
 
-from .client import create_openai_client
-from .utils import create_limiter, create_rate_limiter, create_retryer
+from graphrag.fnllm.ollama.config import OllamaConfig
+from graphrag.fnllm.ollama.factories.client import create_ollama_client
+from graphrag.fnllm.ollama.llm.chat import OpenAIChatLLM
+from graphrag.fnllm.ollama.llm.chat_text import OllamaTextChatLLMImpl
+from graphrag.fnllm.ollama.types.client import OllamaClient
+
+from .utils import create_rate_limiter
 
 
-def create_openai_chat_llm(
-    config: OpenAIConfig,
+def create_ollama_chat_llm(
+    config: OllamaConfig,
     *,
-    client: OpenAIClient | None = None,
+    client: OllamaClient | None = None,
     cache: Cache | None = None,
     cache_interactor: CacheInteractor | None = None,
     events: LLMEvents | None = None,
 ) -> OpenAIChatLLM:
     """Create an OpenAI chat LLM."""
     if client is None:
-        client = create_openai_client(config)
+        client = create_ollama_client(config)
 
-    limiter = create_limiter(config)
-
-    text_chat_llm = _create_openai_text_chat_llm(
+    text_chat_llm = _create_ollama_text_chat_llm(
         client=client,
         config=config,
         cache=cache,
         cache_interactor=cache_interactor,
         events=events,
-        limiter=limiter,
-    )
-    streaming_chat_llm = _create_openai_streaming_chat_llm(
-        client=client,
-        config=config,
-        events=events,
-        limiter=limiter,
     )
     return OpenAIChatLLMImpl(
         text_chat_llm=text_chat_llm,
-        streaming_chat_llm=streaming_chat_llm,
+        streaming_chat_llm=None,  # type: ignore
     )
 
 
-def _create_openai_text_chat_llm(
+def _create_ollama_text_chat_llm(
     *,
-    client: OpenAIClient,
-    config: OpenAIConfig,
-    limiter: Limiter,
+    client: OllamaClient,
+    config: OllamaConfig,
     cache: Cache | None,
     cache_interactor: CacheInteractor | None,
     events: LLMEvents | None,
 ) -> OpenAITextChatLLM:
-    operation = "chat"
-    result = OpenAITextChatLLMImpl(
-        client,
+    result = OllamaTextChatLLMImpl(
+        client=client,
         model=config.model,
         model_parameters=config.chat_parameters,
-        cache=cache_interactor or CacheInteractor(events, cache),
-        events=events,
-        json_handler=create_json_handler(config.json_strategy, config.max_json_retries),
-        usage_extractor=OpenAIUsageExtractor(),
-        history_extractor=OpenAIHistoryExtractor(),
-        variable_injector=VariableInjector(),
-        retryer=create_retryer(config=config, operation=operation, events=events),
-        rate_limiter=create_rate_limiter(config=config, limiter=limiter, events=events),
+        # json_handler=create_json_handler(config.json_strategy, config.max_json_retries),
     )
 
     return OpenAIParseToolsLLM(result)

@@ -7,16 +7,16 @@ import logging
 
 from typing_extensions import Unpack
 
-from fnllm.base import BaseLLM
-from fnllm.types import (
+from graphrag.llm.base import BaseLLM
+from graphrag.llm.types import (
+    CompletionInput,
+    CompletionOutput,
     LLMInput,
     LLMOutput,
-    TChatInput,
-    TChatOutput,
 )
 from graphrag.llm.utils import try_parse_json_object
 
-from .ollama_configuration import OllamaConfig
+from .ollama_configuration import OllamaConfiguration
 from .types import OllamaClientType
 
 log = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ _MAX_GENERATION_RETRIES = 3
 FAILED_TO_CREATE_JSON_ERROR = "Failed to generate valid JSON output"
 
 
-class OllamaChatLLM(BaseLLM[TChatInput, TChatOutput]):
+class OllamaChatLLM(BaseLLM[CompletionInput, CompletionOutput]):
     """A Chat-based LLM."""
 
     _client: OllamaClientType
@@ -46,26 +46,23 @@ class OllamaChatLLM(BaseLLM[TChatInput, TChatOutput]):
             *history,
             {"role": "user", "content": input},
         ]
-        completion = await self.client.chat(
-            messages=messages, **args
-        )
+        completion = await self.client.chat(messages=messages, **args)
         return completion["message"]["content"]
 
     async def _invoke_json(
-            self,
-            input: CompletionInput,
-            **kwargs: Unpack[LLMInput],
+        self,
+        input: CompletionInput,
+        **kwargs: Unpack[LLMInput],
     ) -> LLMOutput[CompletionOutput]:
         """Generate JSON output."""
         name = kwargs.get("name") or "unknown"
         is_response_valid = kwargs.get("is_response_valid") or (lambda _x: True)
 
         async def generate(
-                attempt: int | None = None,
+            attempt: int | None = None,
         ) -> LLMOutput[CompletionOutput]:
             call_name = name if attempt is None else f"{name}@{attempt}"
             result = await self._invoke(input, **{**kwargs, "name": call_name})
-            print("output:\n", result)
             output, json_output = try_parse_json_object(result.output or "")
 
             return LLMOutput[CompletionOutput](
