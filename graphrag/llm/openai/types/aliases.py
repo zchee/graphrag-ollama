@@ -68,7 +68,9 @@ from openai.types.shared_params.function_definition import (
 )
 from typing_extensions import Required, TypedDict
 
-OpenAIChatModel: TypeAlias = ChatModel
+DeepseekModel: TypeAlias = Literal["deepseek-r1:70b"]
+
+OpenAIChatModel: TypeAlias = ChatModel | DeepseekModel
 """Alias for the ChatModel (available model types)."""
 
 OpenAICompletionUsageModel: TypeAlias = CompletionUsageModel

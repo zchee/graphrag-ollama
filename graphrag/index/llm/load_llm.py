@@ -14,14 +14,7 @@ from fnllm.openai import (
     AzureOpenAIConfig,
     OpenAIConfig,
     PublicOpenAIConfig,
-    create_openai_chat_llm,
     create_openai_client,
-    create_openai_embeddings_llm,
-)
-from ...llm.ollama import (
-    OllamaConfig,
-    create_ollama_client,
-    create_ollama_chat_llm,
 )
 from fnllm.openai.types.chat.parameters import OpenAIChatParameters
 from pydantic import TypeAdapter
@@ -29,8 +22,13 @@ from pydantic import TypeAdapter
 import graphrag.config.defaults as defs
 from graphrag.config.enums import LLMType
 from graphrag.config.models.llm_parameters import LLMParameters
+from graphrag.fnllm.openai.factories.chat import create_openai_chat_llm
+from graphrag.fnllm.openai.factories.embeddings import create_openai_embeddings_llm
 from graphrag.index.llm.manager import ChatLLMSingleton, EmbeddingsLLMSingleton
 
+# from ...llm.ollama import (
+#     OllamaConfig,
+# )
 from .mock_llm import MockChatLLM
 
 if TYPE_CHECKING:
@@ -134,6 +132,7 @@ def load_llm(
 
     msg = f"Unknown LLM type {llm_type}"
     raise ValueError(msg)
+
 
 def load_llm_embeddings(
     name: str,
@@ -256,35 +255,35 @@ def _create_openai_config(config: LLMParameters, azure: bool) -> OpenAIConfig:
     )
 
 
-def _create_ollama_config(config: LanguageModelConfig) -> OllamaConfig:
-    encoding_model = config.encoding_model
-    json_strategy = (
-        JsonStrategy.VALID if config.model_supports_json else JsonStrategy.LOOSE
-    )
-    chat_parameters = OpenAIChatParameters(
-        frequency_penalty=config.frequency_penalty,
-        presence_penalty=config.presence_penalty,
-        top_p=config.top_p,
-        max_tokens=config.max_tokens,
-        n=config.n,
-        temperature=config.temperature,
-    )
+# def _create_ollama_config(config: LanguageModelConfig) -> OllamaConfig:
+#     encoding_model = config.encoding_model
+#     json_strategy = (
+#         JsonStrategy.VALID if config.model_supports_json else JsonStrategy.LOOSE
+#     )
+#     chat_parameters = OpenAIChatParameters(
+#         frequency_penalty=config.frequency_penalty,
+#         presence_penalty=config.presence_penalty,
+#         top_p=config.top_p,
+#         max_tokens=config.max_tokens,
+#         n=config.n,
+#         temperature=config.temperature,
+#     )
 
-    return PublicOpenAIConfig(
-        api_key=config.api_key,
-        base_url=config.api_base,
-        json_strategy=json_strategy,
-        organization=config.organization,
-        max_retries=config.max_retries,
-        max_retry_wait=config.max_retry_wait,
-        requests_per_minute=config.requests_per_minute,
-        tokens_per_minute=config.tokens_per_minute,
-        timeout=config.request_timeout,
-        max_concurrency=config.concurrent_requests,
-        model=config.model,
-        encoding=encoding_model,
-        chat_parameters=chat_parameters,
-    )
+#     return PublicOpenAIConfig(
+#         api_key=config.api_key,
+#         base_url=config.api_base,
+#         json_strategy=json_strategy,
+#         organization=config.organization,
+#         max_retries=config.max_retries,
+#         max_retry_wait=config.max_retry_wait,
+#         requests_per_minute=config.requests_per_minute,
+#         tokens_per_minute=config.tokens_per_minute,
+#         timeout=config.request_timeout,
+#         max_concurrency=config.concurrent_requests,
+#         model=config.model,
+#         encoding=encoding_model,
+#         chat_parameters=chat_parameters,
+#     )
 
 
 def _load_azure_openai_chat_llm(
@@ -308,28 +307,28 @@ def _load_static_response(
     return MockChatLLM(config.responses or [])
 
 
-def _load_ollama_chat_llm(
-    on_error: ErrorHandlerFn,
-    cache: LLMCache,
-    config: LanguageModelConfig,
-):
-    return _create_ollama_chat_llm(
-        _create_ollama_config(config),
-        on_error,
-        cache,
-    )
+# def _load_ollama_chat_llm(
+#     on_error: ErrorHandlerFn,
+#     cache: LLMCache,
+#     config: LanguageModelConfig,
+# ):
+#     return _create_ollama_chat_llm(
+#         _create_ollama_config(config),
+#         on_error,
+#         cache,
+#     )
 
 
-def _load_ollama_embeddings_llm(
-    on_error: ErrorHandlerFn,
-    cache: LLMCache,
-    config: LanguageModelConfig,
-):
-    return _create_ollama_embeddings_llm(
-        _create_ollama_config(config),
-        on_error,
-        cache,
-    )
+# def _load_ollama_embeddings_llm(
+#     on_error: ErrorHandlerFn,
+#     cache: LLMCache,
+#     config: LanguageModelConfig,
+# ):
+#     return _create_ollama_embeddings_llm(
+#         _create_ollama_config(config),
+#         on_error,
+#         cache,
+#     )
 
 
 loaders = {
@@ -341,10 +340,10 @@ loaders = {
         "load": _load_azure_openai_chat_llm,
         "chat": True,
     },
-    LLMType.OllamaChat: {
-        "load": _load_ollama_chat_llm,
-        "chat": True,
-    },
+    # LLMType.OllamaChat: {
+    #     "load": _load_ollama_chat_llm,
+    #     "chat": True,
+    # },
     LLMType.OpenAIEmbedding: {
         "load": _load_openai_embeddings_llm,
         "chat": False,
@@ -353,10 +352,10 @@ loaders = {
         "load": _load_azure_openai_embeddings_llm,
         "chat": False,
     },
-    LLMType.OllamaEmbedding: {
-        "load": _load_ollama_embeddings_llm,
-        "chat": False,
-    },
+    # LLMType.OllamaEmbedding: {
+    #     "load": _load_ollama_embeddings_llm,
+    #     "chat": False,
+    # },
     LLMType.StaticResponse: {
         "load": _load_static_response,
         "chat": False,
@@ -394,31 +393,31 @@ def _create_openai_embeddings_llm(
     )
 
 
-def _create_ollama_chat_llm(
-    configuration: OllamaConfig,
-    on_error: ErrorHandlerFn,
-    cache: LLMCache,
-) -> ChatLLM:
-    """Create an Ollama chat llm."""
-    client = create_ollama_client(configuration)
-    return create_ollama_chat_llm(
-        configuration,
-        client=client,
-        cache=cache,
-        events=GraphRagLLMEvents(on_error),
-    )
+# def _create_ollama_chat_llm(
+#     configuration: OllamaConfig,
+#     on_error: ErrorHandlerFn,
+#     cache: LLMCache,
+# ) -> ChatLLM:
+#     """Create an Ollama chat llm."""
+#     client = create_ollama_client(configuration)
+#     return create_ollama_chat_llm(
+#         configuration,
+#         client=client,
+#         cache=cache,
+#         events=GraphRagLLMEvents(on_error),
+#     )
 
 
-def _create_ollama_embeddings_llm(
-    configuration: OllamaConfig,
-    on_error: ErrorHandlerFn,
-    cache: LLMCache,
-) -> EmbeddingsLLM:
-    """Create an Ollama embeddings llm."""
-    client = create_ollama_client(configuration)
-    return create_ollama_embeddings_llm(
-        configuration,
-        client=client,
-        cache=cache,
-        events=GraphRagLLMEvents(on_error),
-    )
+# def _create_ollama_embeddings_llm(
+#     configuration: OllamaConfig,
+#     on_error: ErrorHandlerFn,
+#     cache: LLMCache,
+# ) -> EmbeddingsLLM:
+#     """Create an Ollama embeddings llm."""
+#     client = create_ollama_client(configuration)
+#     return create_ollama_embeddings_llm(
+#         configuration,
+#         client=client,
+#         cache=cache,
+#         events=GraphRagLLMEvents(on_error),
+#     )
