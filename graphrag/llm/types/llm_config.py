@@ -37,3 +37,15 @@ class LLMConfig(Protocol):
     def get_completion_cache_args(self) -> dict:
         """Get the cache arguments for a completion LLM."""
         ...
+
+    @property
+    def model(self) -> str | None:
+        """Model property definition."""
+
+    @property
+    def deployment_name(self) -> str | None:
+        """Deployment name property definition."""
+
+    @property
+    def concurrent_requests(self) -> int | None:
+        """Concurrent requests property definition."""
