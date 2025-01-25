@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Microsoft Corporation.
 # Licensed under the MIT License
 
-"""Factory functions for creating OpenAI LLMs."""
+"""Factory functions for creating Ollama LLMs."""
 
 import asyncio
 
@@ -22,49 +22,154 @@ from graphrag.llm.utils import (
     get_sleep_time_from_error,
     get_token_counter,
 )
-<<<<<<<< HEAD:graphrag/llm/ollama/factories.py
 from graphrag.llm.openai.openai_history_tracking_llm import OpenAIHistoryTrackingLLM
 from graphrag.llm.openai.openai_token_replacing_llm import OpenAITokenReplacingLLM
 
 from .json_parsing_llm import JsonParsingLLM
 from .ollama_chat_llm import OllamaChatLLM
 from .ollama_completion_llm import OllamaCompletionLLM
-from .ollama_configuration import OllamaConfiguration
+from .config import OllamaConfig
 from .ollama_embeddings_llm import OllamaEmbeddingsLLM
-from .types import OllamaClientType
-|||||||| parent of b2736a9 (ollama support.):graphrag/llm/openai/factories.py
+from .types import OllamaClient
 
-from .json_parsing_llm import JsonParsingLLM
-from .openai_chat_llm import OpenAIChatLLM
-from .openai_completion_llm import OpenAICompletionLLM
-from .openai_configuration import OpenAIConfiguration
-from .openai_embeddings_llm import OpenAIEmbeddingsLLM
-from .openai_history_tracking_llm import OpenAIHistoryTrackingLLM
-from .openai_token_replacing_llm import OpenAITokenReplacingLLM
-from .types import OpenAIClientTypes
-from .utils import (
-    RATE_LIMIT_ERRORS,
-    RETRYABLE_ERRORS,
-    get_completion_cache_args,
-    get_sleep_time_from_error,
-    get_token_counter,
-)
-========
+# from fnllm.caching.base import Cache
+# from fnllm.events.base import LLMEvents
+# from fnllm.limiting.base import Limiter
+# from fnllm.types import (
+#     LLM,
+#     # CompletionLLM,
+#     # EmbeddingLLM,
+#     # ErrorHandlerFn,
+#     # LLMCache,
+#     # LLMInvocationFn,
+#     # OnCacheActionFn,
+# )
+#
+# from graphrag.llm.ollama.config import OllamaConfig
+# from graphrag.llm.ollama.types import (
+#     OllamaChatLLM,
+#     OllamaClient,
+#     OllamaStreamingChatLLM,
+#     OllamaTextChatLLM,
+# )
+# from fnllm.services.cache_interactor import CacheInteractor
+#
+# from graphrag.llm.ollama.create_ollama_client import create_ollama_client
+# from fnllm.openai.factories.utils import create_limiter
 
-from .json_parsing_llm import JsonParsingLLM
-from .openai_chat_llm import OpenAIChatLLM
-from .openai_completion_llm import OpenAICompletionLLM
-from .openai_configuration import OpenAIConfiguration
-from .openai_embeddings_llm import OpenAIEmbeddingsLLM
-from .openai_history_tracking_llm import OpenAIHistoryTrackingLLM
-from .openai_token_replacing_llm import OpenAITokenReplacingLLM
-from .types import OpenAIClientTypes
->>>>>>>> b2736a9 (ollama support.):graphrag/llm/openai/factories.py
+# from fnllm.openai.factories import create_openai_chat_llm
+#
+# from graphrag.llm.base import CachingLLM, RateLimitingLLM
+# from fnllm.limiting import Limiter
+# from graphrag.llm.limiting import LLMLimiter
+# from graphrag.llm.types import (
+#     LLM,
+#     CompletionLLM,
+#     EmbeddingLLM,
+#     ErrorHandlerFn,
+#     LLMCache,
+#     LLMInvocationFn,
+#     OnCacheActionFn,
+# )
+# from graphrag.llm.utils import (
+#     RATE_LIMIT_ERRORS,
+#     RETRYABLE_ERRORS,
+#     get_sleep_time_from_error,
+#     get_token_counter,
+# )
+# from graphrag.llm.openai.openai_history_tracking_llm import OpenAIHistoryTrackingLLM
+# from graphrag.llm.openai.openai_token_replacing_llm import OpenAITokenReplacingLLM
+#
+# from .json_parsing_llm import JsonParsingLLM
+# from .ollama_chat_llm import OllamaChatLLM
+# from .ollama_completion_llm import OllamaCompletionLLM
+# from .ollama_configuration import OllamaConfiguration
+# from .ollama_embeddings_llm import OllamaEmbeddingsLLM
+# from .types import OllamaClientType
+
+# def create__ollama_chat_llm(
+#     config: OllamaConfig,
+#     *,
+#     client: OllamaClient | None = None,
+#     cache: Cache | None = None,
+#     cache_interactor: CacheInteractor | None = None,
+#     events: LLMEvents | None = None,
+# ) -> OllamaChatLLM:
+#     """Create an OpenAI chat LLM."""
+#     if client is None:
+#         client = create_ollama_client(config)
+#
+#     limiter = create_limiter(config)
+#
+#     text_chat_llm = _create_openai_text_chat_llm(
+#         client=client,
+#         config=config,
+#         cache=cache,
+#         cache_interactor=cache_interactor,
+#         events=events,
+#         limiter=limiter,
+#     )
+#     streaming_chat_llm = _create_openai_streaming_chat_llm(
+#         client=client,
+#         config=config,
+#         events=events,
+#         limiter=limiter,
+#     )
+#     return OpenAIChatLLMImpl(
+#         text_chat_llm=text_chat_llm,
+#         streaming_chat_llm=streaming_chat_llm,
+#     )
+#
+#
+# def _create_openai_text_chat_llm(
+#     *,
+#     client: OllamaClient,
+#     config: OllamaConfig,
+#     limiter: Limiter,
+#     cache: Cache | None,
+#     cache_interactor: CacheInteractor | None,
+#     events: LLMEvents | None,
+# ) -> OllamaTextChatLLM:
+#     operation = "chat"
+#     result = OpenAITextChatLLMImpl(
+#         client,
+#         model=config.model,
+#         model_parameters=config.chat_parameters,
+#         cache=cache_interactor or CacheInteractor(events, cache),
+#         events=events,
+#         json_handler=create_json_handler(config.json_strategy, config.max_json_retries),
+#         usage_extractor=OpenAIUsageExtractor(),
+#         history_extractor=OpenAIHistoryExtractor(),
+#         variable_injector=VariableInjector(),
+#         retryer=create_retryer(config=config, operation=operation, events=events),
+#         rate_limiter=create_rate_limiter(config=config, limiter=limiter, events=events),
+#     )
+#
+#     return OpenAIParseToolsLLM(result)
+#
+#
+# def _create_openai_streaming_chat_llm(
+#     *,
+#     client: OpenAIClient,
+#     config: OpenAIConfig,
+#     limiter: Limiter,
+#     events: LLMEvents | None,
+# ) -> OpenAIStreamingChatLLM:
+#     """Create an OpenAI streaming chat LLM."""
+#     return OpenAIStreamingChatLLMImpl(
+#         client,
+#         model=config.model,
+#         model_parameters=config.chat_parameters,
+#         events=events,
+#         emit_usage=config.track_stream_usage,
+#         variable_injector=VariableInjector(),
+#         rate_limiter=create_rate_limiter(limiter=limiter, config=config, events=events),
+#     )
 
 
 def create_ollama_chat_llm(
-    client: OllamaClientType,
-    config: OllamaConfiguration,
+    client: OllamaClient,
+    config: OllamaConfig,
     cache: LLMCache | None = None,
     limiter: LLMLimiter | None = None,
     semaphore: asyncio.Semaphore | None = None,
@@ -87,8 +192,8 @@ def create_ollama_chat_llm(
 
 
 def create_ollama_completion_llm(
-    client: OllamaClientType,
-    config: OllamaConfiguration,
+    client: OllamaClient,
+    config: OllamaConfig,
     cache: LLMCache | None = None,
     limiter: LLMLimiter | None = None,
     semaphore: asyncio.Semaphore | None = None,
@@ -109,8 +214,8 @@ def create_ollama_completion_llm(
 
 
 def create_ollama_embedding_llm(
-    client: OllamaClientType,
-    config: OllamaConfiguration,
+    client: OllamaClient,
+    config: OllamaConfig,
     cache: LLMCache | None = None,
     limiter: LLMLimiter | None = None,
     semaphore: asyncio.Semaphore | None = None,
@@ -132,9 +237,9 @@ def create_ollama_embedding_llm(
 
 def _rate_limited(
     delegate: LLM,
-    config: OllamaConfiguration,
+    config: OllamaConfig,
     operation: str,
-    limiter: LLMLimiter | None,
+    limiter: Limiter | None,
     semaphore: asyncio.Semaphore | None,
     on_invoke: LLMInvocationFn | None,
 ):

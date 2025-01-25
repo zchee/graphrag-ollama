@@ -18,10 +18,11 @@ from fnllm.openai import (
     create_openai_client,
     create_openai_embeddings_llm,
 )
-from ...llm.ollama import (
+from graphrag.llm.ollama import (
     OllamaConfig,
-    create_ollama_client,
     create_ollama_chat_llm,
+    create_ollama_client,
+    create_ollama_embeddings_llm,
 )
 from fnllm.openai.types.chat.parameters import OpenAIChatParameters
 from pydantic import TypeAdapter
